@@ -4,6 +4,8 @@ classdef measurement < handle
         parameters;
         device;
         figHandle;
+        data1Axis;
+        data2Axis;
     end
 
     methods
@@ -45,6 +47,7 @@ classdef measurement < handle
         function run(obj)
             freqVector = linspace(obj.parameters.leftFq, obj.parameters.rightFq, obj.parameters.NOP);
 
+            figureSetup();
             keyHandle = uicontrol(...
                 'Style', 'pushbutton', ...
                 'String', 'Stop', ...
@@ -55,7 +58,7 @@ classdef measurement < handle
 
             while ishandle(keyHandle)
                 [mag, phs] = obj.device.oneSweep();
-                obj.figHandle = obj.plot_mag_phs(freqVector, mag, phs);
+                obj.plotData(freqVector, mag, phs);
                 hold on;
 
                 timeNow = toc(timeZero);
@@ -74,11 +77,32 @@ classdef measurement < handle
                 %Save analysis
                 % dlmwrite([obj.parameters.dir, obj.parameters.log, '_analysis.csv'], [timeNow, resf, fwhm, Q], 'delimiter', ',', '-append');
             end
-            saveas(obj.figHandle,[obj.parameters.dir, obj.parameters.log, ' 2dFigure.png']);
-            saveas(obj.figHandle,[obj.parameters.dir, obj.parameters.log, ' 2dFigure.fig']);
+
+            saveas(obj.figHandle, [obj.parameters.dir, obj.parameters.log, ' 2dFigure.png']);
+            saveas(obj.figHandle, [obj.parameters.dir, obj.parameters.log, ' 2dFigure.fig']);
             % fprintf(ia, "SING");
 
             % disp(wait_4294a(ia, 'Sweep Finished: '));
+
+        end
+
+        function figureSetup(obj)
+            obj.figHandle = figure('Position', [200, 200, 500, 500]);
+            obj.data1Axis = subplot(1, 2, 1);
+            xlabel('Frequency (Hz)');
+            ylabel('Impedance Real Part (\Omega)');
+            hold on;
+            grid on;
+            obj.data2Axis = subplot(1, 2, 2);
+            xlabel('Frequency (Hz)');
+            ylabel('Imaginary Part (\Omega)');
+            hold on;
+            grid on;
+        end
+
+        function plotData(freq_vec, mag, phs)
+            plot(obj.data1Axis, freq_vec, mag);
+            plot(obj.data2Axis, freq_vec, phs);
 
         end
 
@@ -86,24 +110,6 @@ classdef measurement < handle
 
     methods (Static)
         par = parameterSetup();
-
-        function figureOut = plot_mag_phs(freq_vec, mag, phs)
-            %     f1 = figure('Position', [200, 200, 500, 500]);
-            figureOut = figure();
-            subplot(1, 2, 1);
-            plot(freq_vec, mag);
-            xlabel('Frequency (Hz)');
-            ylabel('Impedance Real Part (\Omega)');
-            hold on;
-            grid on;
-            subplot(1, 2, 2);
-            plot(freq_vec, phs);
-            xlabel('Frequency (Hz)');
-            ylabel('Imaginary Part (\Omega)');
-            hold on;
-            grid on;
-
-        end
 
         % function [resf, fwhm, Q] = analyze(real, img, freq_vec)
 
