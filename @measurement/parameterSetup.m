@@ -1,4 +1,4 @@
-function par = parameterSetup(obj)
+function par = parameterSetup()
     %myFun - Description
     %
     % Syntax: par = myFun(input)

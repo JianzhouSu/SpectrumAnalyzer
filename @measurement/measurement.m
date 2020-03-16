@@ -13,5 +13,9 @@ classdef measurement < handle
         end
 
     end
+    
+    methods(Static)
+        par = parameterSetup();
+    end
 
 end
