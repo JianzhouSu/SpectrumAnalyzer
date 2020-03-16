@@ -4,6 +4,9 @@ function par = parameterSetup(obj)
     % Syntax: par = myFun(input)
     %
     % Long description
+
+    % device com port
+    par.comPort = 'COM5';
     % folder name of results
     par.log = char(['4294A', datestr(now, 30)]);
     % path of result folder
