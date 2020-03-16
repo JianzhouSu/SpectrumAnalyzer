@@ -2,7 +2,7 @@ classdef A4294A
 
     properties
         serialPort; % serial port class
-        par;
+
     end
 
     methods
@@ -12,7 +12,7 @@ classdef A4294A
 
             % reset all instruments connected to matlab.
             instrreset;
-%             obj.par = parameter_setup();
+
             % According to prologix, baud rate doesn't matters.
             % Sets terminator of message is LF(ascii 10)
             obj.serialPort = serial(comPort, 'BaudRate', 115200, 'Terminator', 'LF');
@@ -28,7 +28,7 @@ classdef A4294A
         function write(obj, command)
             fprintf(obj.serialPort, command);
         end
-        
+
         function output = read(obj)
             output = fgets(obj.serialPort);
         end
@@ -36,23 +36,25 @@ classdef A4294A
         function stats = wait(obj)
             pause(0.1);
             obj.write("*OPC?");
+
             if isempty(obj.read)
                 stats = 'Ready';
             else
                 stats = 'Busy';
             end
+
         end
 
         function output = getId(obj)
             obj.write('*IDN?');
             idn = obj.read();
-            disp(['Serial ready:',idn]);
+            disp(['Serial ready:', idn]);
             output = idn;
         end
 
         function init(obj)
-        %init - setup analyzer
-        % Initialize prologix and Agilent 4924A
+            %init - setup analyzer
+            % Initialize prologix and Agilent 4924A
 
             fopen(obj.serialPort);
             obj.write('++mode 1');
@@ -63,7 +65,7 @@ classdef A4294A
             obj.write('read_tmo_ms 3000');
             obj.getId();
 
-%             obj.wait();
+            obj.wait();
 
         end
 
