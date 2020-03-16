@@ -14,6 +14,8 @@ function par = parameterSetup()
     % alias of result folder
     par.outFileName = par.log;
 
+    % measure format
+    par.format = 'IRIM';
     % start frequency of sweep
     par.leftFq = 32500;
     % stop frequency of sweep
