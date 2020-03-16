@@ -1,4 +1,4 @@
-classdef A4294A
+classdef A4294A < handle
 
     properties
         serialPort; % serial port class

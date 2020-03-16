@@ -1,4 +1,4 @@
-classdef measurement
+classdef measurement < handle
 
     properties
         parameters;
@@ -7,7 +7,7 @@ classdef measurement
     methods
 
         function obj = measurement()
-            obj.parameters = parameterSetup();
+            obj.parameters = obj.parameterSetup();
         end
 
     end
