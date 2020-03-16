@@ -75,7 +75,7 @@ classdef measurement < handle
                 % dlmwrite([obj.parameters.dir, obj.parameters.log, '_analysis.csv'], [timeNow, resf, fwhm, Q], 'delimiter', ',', '-append');
             end
             saveas(obj.figHandle,[obj.parameters.dir, obj.parameters.log, ' 2dFigure.png']);
-            saveas(obj.figHandle,[obj.parameters.dir, obj.parameters.log, ' 2dFigure.bmp']);
+            saveas(obj.figHandle,[obj.parameters.dir, obj.parameters.log, ' 2dFigure.fig']);
             % fprintf(ia, "SING");
 
             % disp(wait_4294a(ia, 'Sweep Finished: '));
