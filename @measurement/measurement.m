@@ -9,7 +9,7 @@ classdef measurement < handle
 
         function obj = measurement()
             obj.parameters = obj.parameterSetup();
-            obj.device = A4294A(par.comPort);
+            obj.device = A4294A(obj.parameters.comPort);
         end
 
     end
