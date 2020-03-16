@@ -15,13 +15,13 @@ par = parameter_setup();
 %% Setups serial communication between PC and Prologix.
 % ia stands for impedance analyzer
 % According to prologix, baud rate doesn't matters.
-ia = serialport('COM10',115200);
+ia = serial('COM5','BaudRate',115200,'Terminator','LF');
 % Sets terminator of message is LF(ascii 10)
-configureTerminator(ia, "LF");
+% configureTerminator(ia, "LF");
 % Communication timeout setup (unit: seconds)
 ia.Timeout = 15;
 % Input buffer size setup
-% ia.InputBufferSize = 10*20001;
+ia.InputBufferSize = 10*20001;
 
 %% Start Communication
 
@@ -29,9 +29,10 @@ ia.Timeout = 15;
 setup_prologix(ia);
 
 % Query ID number to test communications
-writeline(ia, "*IDN?");
+fprintf(ia, "*IDN?");
 % read returns
-idn = readline(ia)
+idn = fgets(ia);
+disp(idn);
 
 init_4294a(ia, par);
 pause(0.5);
@@ -66,7 +67,7 @@ while ishandle(keyHandle)
     %Save analysis
     dlmwrite([par.dir,par.log,'_analysis.csv'],[timeNow,resf,fwhm,Q],'delimiter',',','-append');
 end
-    % writeline(ia, "SING");
+    % fprintf(ia, "SING");
 
 % disp(wait_4294a(ia, 'Sweep Finished: '));
 
@@ -117,12 +118,13 @@ function setup_prologix(ia)
     % Syntax:  setup_prologix(input)
     %
     % Long description
-    writeline(ia, "++mode 1");
-    writeline(ia, "++addr 17");
-    writeline(ia, "++auto 1");
-    writeline(ia, "++eoi 1");
-    writeline(ia, "++eos 2");
-    writeline(ia, "read_tmo_ms 3000");
+    fopen(ia);
+    fprintf(ia, "++mode 1");
+    fprintf(ia, "++addr 17");
+    fprintf(ia, "++auto 1");
+    fprintf(ia, "++eoi 1");
+    fprintf(ia, "++eos 2");
+    fprintf(ia, "read_tmo_ms 3000");
 end
 
 function stats = wait_4294a(ia, text)
@@ -133,9 +135,9 @@ function stats = wait_4294a(ia, text)
     % Long description
     % necessary delay
     pause(0.1);
-    writeline(ia, '*OPC?');
+    fprintf(ia, '*OPC?');
 
-    if ~isempty(readline(ia))
+    if ~isempty(fgets(ia))
         stats = [text, 'True'];
     else
         stats = [text, 'False'];
@@ -154,36 +156,36 @@ function init_4294a(ia, par)
     % '*RST':Triggers a reset to the preset state. Although this preset state is almost the same as that of
     % the reset result with the PRES? command on page 404, there are some differences as
     % follows. (No query)
-%     writeline(ia, '*RST');
+%     fprintf(ia, '*RST');
     % '*CLS': Clears the error queue, Status Byte Register, Operation Status Register, Standard Event
     % Status Register, and Instrument Event Status Register.
-%     writeline(ia, '*CLS');
+%     fprintf(ia, '*CLS');
     % '*OPC': Makes the setting, when the execution of all overlap commands (refer to *WAI on page
     % 262) is completed, to set the OPC bit (bit 0) of the Standard Event Status Register. (No
     % query).
-    % writeline(ia, '*OPC');
+    % fprintf(ia, '*OPC');
     % wait for finished
     disp(wait_4294a(ia, 'Init Finished: '));
     %Sets Measurement Parameter
-    writeline(ia,'MEAS{IRIM}');
+    fprintf(ia,'MEAS{IRIM}');
     % Sets oscillation
-    writeline(ia, ['POWE ', num2str(par.osc_level) ' V']);
+    fprintf(ia, ['POWE ', num2str(par.osc_level) ' V']);
     % Sets the sweep range start value. P444
-    writeline(ia, ['STAR ', num2str(par.leftFq), 'HZ']);
+    fprintf(ia, ['STAR ', num2str(par.leftFq), 'HZ']);
     % Sets the sweep range stop value. P446
-    writeline(ia, ['STOP ', num2str(par.rightFq), 'HZ']);
+    fprintf(ia, ['STOP ', num2str(par.rightFq), 'HZ']);
     % Sets the bandwidth. To set the bandwidth of each segment when creating the list sweep
     % table, also use this command. P274
-    writeline(ia, 'BWFACT 2');
+    fprintf(ia, 'BWFACT 2');
     %   Sets the transfer format for reading array data to the ASCII format (preset state). For details
     %  about transfer formats, refer to "Data Transfer Format" on page 78. (No query)
-    writeline(ia, 'FORM4');
+    fprintf(ia, 'FORM4');
     % sets number of points of each sweep
-    writeline(ia, ['POIN ', num2str(par.NOP)]);
+    fprintf(ia, ['POIN ', num2str(par.NOP)]);
     % Enable average measurement points
-    writeline(ia, 'PAVER ON');
+    fprintf(ia, 'PAVER ON');
     % Points averaging factor
-    writeline(ia, ['PAVERFACT ', num2str(par.p_aver)]);
+    fprintf(ia, ['PAVERFACT ', num2str(par.p_aver)]);
     % Measurement Parameter
     
 end
@@ -194,23 +196,23 @@ function [mag, phs] = one_sweep(ia, par)
     % Syntax: mag, phs = one_sweep(ia, par)
     %
     % Long description
-    writeline(ia, 'HOLD');
-    writeline(ia, 'TRGS INT');
-    writeline(ia, 'SING');
+    fprintf(ia, 'HOLD');
+    fprintf(ia, 'TRGS INT');
+    fprintf(ia, 'SING');
     pause(10);
     disp(wait_4294a(ia, 'Sweep Finished: '));
     pause(0.1);
-    writeline(ia, 'TRAC A');
-%     writeline(ia, 'FMT LOGY');
-    writeline(ia, 'AUTO');
-    writeline(ia, 'OUTPDTRC?');
-    mag = str2double(split(readline(ia), ','));
+    fprintf(ia, 'TRAC A');
+%     fprintf(ia, 'FMT LOGY');
+    fprintf(ia, 'AUTO');
+    fprintf(ia, 'OUTPDTRC?');
+    mag = str2double(split(fgets(ia), ','));
     mag = mag(1:2:end);
-    writeline(ia, 'TRAC B');
-    %     writeline(ia, 'FMT LINY');
-    writeline(ia, 'AUTO');
-    writeline(ia, 'OUTPDTRC?'); 
-    phs = str2double(split(readline(ia), ','));
+    fprintf(ia, 'TRAC B');
+    %     fprintf(ia, 'FMT LINY');
+    fprintf(ia, 'AUTO');
+    fprintf(ia, 'OUTPDTRC?'); 
+    phs = str2double(split(fgets(ia), ','));
     phs = phs(1:2:end);
     disp(wait_4294a(ia, 'Read Data Finished: '));
 end
