@@ -89,7 +89,7 @@ classdef measurement < handle
 
         function figureOut = plot_mag_phs(freq_vec, mag, phs)
             %     f1 = figure('Position', [200, 200, 500, 500]);
-            figureOut = figure(1);
+            figureOut = figure();
             subplot(1, 2, 1);
             plot(freq_vec, mag);
             xlabel('Frequency (Hz)');
