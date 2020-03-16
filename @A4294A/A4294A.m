@@ -82,7 +82,7 @@ classdef A4294A < handle
             disp(obj.wait());
             pause(0.1);
             obj.write('TRAC A');
-        %     obj.write('FMT LOGY');
+            %     obj.write('FMT LOGY');
             obj.write('AUTO');
             obj.write('OUTPDTRC?');
             data1 = str2double(split(obj.read(), ','));
@@ -90,7 +90,7 @@ classdef A4294A < handle
             obj.write('TRAC B');
             %     obj.write('FMT LINY');
             obj.write('AUTO');
-            obj.write('OUTPDTRC?'); 
+            obj.write('OUTPDTRC?');
             data2 = str2double(split(obj.read(), ','));
             data2 = data2(1:2:end);
             disp(obj.wait());

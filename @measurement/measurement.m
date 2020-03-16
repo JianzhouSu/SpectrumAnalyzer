@@ -3,6 +3,7 @@ classdef measurement < handle
     properties
         parameters;
         device;
+        figHandle;
     end
 
     methods
@@ -12,12 +13,15 @@ classdef measurement < handle
             obj.device = A4294A(obj.parameters.comPort);
             obj.init();
             obj.run();
+
+            % END OF CODE
+            disp("END OF CODE");
         end
 
         function init(obj)
 
             %Sets Measurement Parameter
-            obj.device.write(['MEAS{',obj.parameters.format,'}']);
+            obj.device.write(['MEAS{', obj.parameters.format, '}']);
             % Sets oscillation
             obj.device.write(['POWE ', num2str(obj.parameters.osc_level) ' V']);
             % Sets the sweep range start value. P444
@@ -51,7 +55,7 @@ classdef measurement < handle
 
             while ishandle(keyHandle)
                 [mag, phs] = obj.device.oneSweep();
-                obj.plot_mag_phs(freqVector, mag, phs);
+                obj.figHandle = obj.plot_mag_phs(freqVector, mag, phs);
                 hold on;
 
                 timeNow = toc(timeZero);
@@ -64,19 +68,17 @@ classdef measurement < handle
                 % save phs parts
                 dlmwrite([obj.parameters.dir, obj.parameters.log, '_imag.csv'], [timeNow, transpose(phs)], 'delimiter', ',', '-append');
                 % analyze data
-                [resf, fwhm, Q] = obj.analyze(mag, phs, freqVector);
+                % [resf, fwhm, Q] = obj.analyze(mag, phs, freqVector);
                 %Plot Analysis
-                obj.plotana(timeVector, resf, fwhm, Q);
+                % obj.plotana(timeVector, resf, fwhm, Q);
                 %Save analysis
-                dlmwrite([obj.parameters.dir, obj.parameters.log, '_analysis.csv'], [timeNow, resf, fwhm, Q], 'delimiter', ',', '-append');
+                % dlmwrite([obj.parameters.dir, obj.parameters.log, '_analysis.csv'], [timeNow, resf, fwhm, Q], 'delimiter', ',', '-append');
             end
-
+            saveas(obj.figHandle,[obj.parameters.dir, obj.parameters.log, ' 2dFigure.png']);
+            saveas(obj.figHandle,[obj.parameters.dir, obj.parameters.log, ' 2dFigure.bmp']);
             % fprintf(ia, "SING");
 
             % disp(wait_4294a(ia, 'Sweep Finished: '));
-
-            % END OF CODE------------------------------------------------------------------
-            disp("END OF CODE");
 
         end
 
@@ -85,9 +87,9 @@ classdef measurement < handle
     methods (Static)
         par = parameterSetup();
 
-        function plot_mag_phs(freq_vec, mag, phs)
+        function figureOut = plot_mag_phs(freq_vec, mag, phs)
             %     f1 = figure('Position', [200, 200, 500, 500]);
-            figure(1);
+            figureOut = figure(1);
             subplot(1, 2, 1);
             plot(freq_vec, mag);
             xlabel('Frequency (Hz)');
@@ -103,44 +105,44 @@ classdef measurement < handle
 
         end
 
-        function [resf, fwhm, Q] = analyze(real, img, freq_vec)
+        % function [resf, fwhm, Q] = analyze(real, img, freq_vec)
 
-            % Find RF
-            RFindex = find(real == max(real));
-            resf = freq_vec(RFindex);
+        %     % Find RF
+        %     RFindex = find(real == max(real));
+        %     resf = freq_vec(RFindex);
 
-            %Find FWHM Bandwidth
-            halfMax = (min(real) + max(real)) / 2;
-            % Find where the data first drops below half the max.
-            index1 = find(real >= halfMax, 1, 'first');
-            % Find where the data last rises above half the max.
-            index2 = find(real >= halfMax, 1, 'last');
-            fwhm = freq_vec(index2) - freq_vec(index1);
-            % Find Q
-            Q = resf / fwhm;
+        %     %Find FWHM Bandwidth
+        %     halfMax = (min(real) + max(real)) / 2;
+        %     % Find where the data first drops below half the max.
+        %     index1 = find(real >= halfMax, 1, 'first');
+        %     % Find where the data last rises above half the max.
+        %     index2 = find(real >= halfMax, 1, 'last');
+        %     fwhm = freq_vec(index2) - freq_vec(index1);
+        %     % Find Q
+        %     Q = resf / fwhm;
 
-        end
+        % end
 
-        function plotana(time_vec, resf, fwhm, Q)
-            figure(2);
-            subplot(3, 1, 1);
-            plot(time_vec, resf);
-            xlabel('Time(s)');
-            ylabel('Resonant Frequency(Hz)');
-            grid on;
-            subplot(3, 1, 2);
-            plot(time_vec, fwhm);
-            xlabel('Time(s)');
-            ylabel('Bandwidth(Hertz)');
-            grid on;
-            subplot(3, 1, 3)
-            plot(time_vec, Q);
-            xlabel('Time(s)');
-            ylabel('Quality Factor');
-            grid on
-            legend;
-            drawnow;
-        end
+        % function plotana(time_vec, resf, fwhm, Q)
+        %     figure(2);
+        %     subplot(3, 1, 1);
+        %     plot(time_vec, resf);
+        %     xlabel('Time(s)');
+        %     ylabel('Resonant Frequency(Hz)');
+        %     grid on;
+        %     subplot(3, 1, 2);
+        %     plot(time_vec, fwhm);
+        %     xlabel('Time(s)');
+        %     ylabel('Bandwidth(Hertz)');
+        %     grid on;
+        %     subplot(3, 1, 3)
+        %     plot(time_vec, Q);
+        %     xlabel('Time(s)');
+        %     ylabel('Quality Factor');
+        %     grid on
+        %     legend;
+        %     drawnow;
+        % end
 
     end
 

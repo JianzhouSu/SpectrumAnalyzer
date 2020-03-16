@@ -15,6 +15,10 @@ function par = parameterSetup()
     par.outFileName = par.log;
 
     % measure format
+    % IRIM : real part(R) and imagine part(X)
+    % IMPH : impedance magnitude(Z) and phase
+    % AMPH : admittance magnitude(Y) and phase
+    % ARIM : conductance(G) and susceptance(B)
     par.format = 'IRIM';
     % start frequency of sweep
     par.leftFq = 32500;
