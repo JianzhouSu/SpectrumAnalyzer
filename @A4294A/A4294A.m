@@ -37,7 +37,7 @@ classdef A4294A < handle
             pause(0.1);
             obj.write("*OPC?");
 
-            if isempty(obj.read)
+            if isempty(obj.read())
                 stats = 'Ready';
             else
                 stats = 'Busy';
@@ -67,6 +67,34 @@ classdef A4294A < handle
 
             obj.wait();
 
+        end
+
+        function [data1, data2] = oneSweep(obj)
+            %myFun - Description
+            %
+            % Syntax: data1, data2 = oneSweep(obj)
+            %
+            % Long description
+            obj.write('HOLD');
+            obj.write('TRGS INT');
+            obj.write('SING');
+            pause(10);
+            disp(obj.wait());
+            pause(0.1);
+            obj.write('TRAC A');
+        %     obj.write('FMT LOGY');
+            obj.write('AUTO');
+            obj.write('OUTPDTRC?');
+            data1 = str2double(split(obj.read(), ','));
+            data1 = data1(1:2:end);
+            obj.write('TRAC B');
+            %     obj.write('FMT LINY');
+            obj.write('AUTO');
+            obj.write('OUTPDTRC?'); 
+            data2 = str2double(split(obj.read(), ','));
+            data2 = data2(1:2:end);
+            disp(obj.wait());
+            disp('Data acquisition finished');
         end
 
     end
