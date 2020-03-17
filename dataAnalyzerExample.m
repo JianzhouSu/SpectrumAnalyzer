@@ -1,38 +1,49 @@
 %% Example Title
-% Summary of example objective
-clear;
-warning('off','all');
-%% Section 1 Title
-% Description of first code block
-a = analyzer();
+function dataAnalyzerExample(pathInput)
+    % Summary of example objective
+    clear;
+    warning('off', 'all');
+    %% Section 1 Title
+    % Description of first code block
+    if nargin < 1
 
-%% Section 2 load file
-% Description of second code block
-% [timeArray, freqArray, realPartArray] = loadData(a.folder);
-a.loadFile();
+        a = analyzer();
+    else
+        a = analyzer(pathInput);
+    end
 
-%% Section 3 use sweep to find base line
-sweepSize = size(a.data1Array);
+    %% Section 2 load file
+    % Description of second code block
+    % [timeArray, freqArray, realPartArray] = loadData(a.folder);
+    a.loadFile();
 
-% sweepArray = sweep(zeros(sweepSize(1)),zeros(sweepSize(2)),zeros(sweepSize(2)));
-for idxSweep = (1:size(a.data1Array,1))
-sweepArray(idxSweep) = a.sweep(a.timeArray(idxSweep),a.freqArray(idxSweep,:),a.data1Array(idxSweep,:));
+    %% Section 3 use sweep to find base line
+    % sweepSize = size(a.data1Array);
+
+    % sweepArray = sweep(zeros(sweepSize(1)),zeros(sweepSize(2)),zeros(sweepSize(2)));
+    for idxSweep = (1:size(a.data1Array, 1))
+        sweepArray(idxSweep) = sweep(a.timeArray(idxSweep), a.freqArray(idxSweep, :), a.data1Array(idxSweep, :));
+    end
+
+    figure();
+    axHandle = gca;
+
+    rf = zeros(size(a.timeArray));
+    bw = zeros(size(a.timeArray));
+    qf = zeros(size(a.timeArray));
+
+    for idxSweep = (1:size(a.data1Array, 1))
+        sweepArray(idxSweep).baselineCorrect(2);
+
+        %     sweepArray(idxSweep).smoothValues();
+        axHandle = sweepArray(idxSweep).plot2d(axHandle);
+        bw(idxSweep) = sweepArray(idxSweep).getBandwidth();
+        rf(idxSweep) = sweepArray(idxSweep).getResonateFreq();
+        qf(idxSweep) = sweepArray(idxSweep).getQFactor();
+    end
+
+    title(a.name);
+    a.saveResult(rf, bw, qf);
+    a.plotResult(rf, bw, qf);
+    a.saveResultFig();
 end
-
-figure();
-axHandle = gca;
-
-rf = zeros(size(a.timeArray));
-bw = zeros(size(a.timeArray));
-qf = zeros(size(a.timeArray));
-for idxSweep = (1:size(a.data1Array,1))
-    sweepArray(idxSweep).baselineCorrect(2);
-
-%     sweepArray(idxSweep).smoothValues();
-    axHandle = sweepArray(idxSweep).plot2d(axHandle);
-    bw(idxSweep) = sweepArray(idxSweep).getBandwidth();
-    rf(idxSweep) = sweepArray(idxSweep).getResonateFreq();
-    qf(idxSweep) = sweepArray(idxSweep).getQFactor();
-end
-title(a.name);
-a.saveResult(rf,bw,qf);

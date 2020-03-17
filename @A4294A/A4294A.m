@@ -34,6 +34,7 @@ classdef A4294A < handle
         end
 
         function stats = wait(obj)
+            % todo: need a better wait program
             pause(0.1);
 %             obj.write("*OPC?");
 % 
