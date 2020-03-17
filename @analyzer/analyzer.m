@@ -66,10 +66,22 @@ classdef analyzer < handle
             figure();
             subplot(3, 1, 1);
             plot(obj.timeArray, rf);
+            set(get(gca, 'XLabel'), 'String', 'time(s)');
+            set(get(gca, 'YLabel'), 'String', 'Resonate Freq(Hz)');
+            set(get(gca, 'Title'), 'String', 'Resonate frequency');
+            grid on;
             subplot(3, 1, 2);
             plot(obj.timeArray, bw);
+            set(get(gca, 'XLabel'), 'String', 'time(s)');
+            set(get(gca, 'YLabel'), 'String', 'Bandwidth(hz)');
+            set(get(gca, 'Title'), 'String', 'Bandwidth');
+            grid on;
             subplot(3, 1, 3);
             plot(obj.timeArray, qf);
+            set(get(gca, 'XLabel'), 'String', 'time(s)');
+            set(get(gca, 'YLabel'), 'String', 'Q factor');
+            set(get(gca, 'Title'), 'String', 'quality factor');
+            grid on;
         end
 
         function saveResultFig(obj)
