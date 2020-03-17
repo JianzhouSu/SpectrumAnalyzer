@@ -47,7 +47,7 @@ classdef measurement < handle
         function run(obj)
             freqVector = linspace(obj.parameters.leftFq, obj.parameters.rightFq, obj.parameters.NOP);
 
-            figureSetup();
+            obj.figureSetup();
             keyHandle = uicontrol(...
                 'Style', 'pushbutton', ...
                 'String', 'Stop', ...
@@ -100,7 +100,7 @@ classdef measurement < handle
             grid on;
         end
 
-        function plotData(freq_vec, mag, phs)
+        function plotData(obj, freq_vec, mag, phs)
             plot(obj.data1Axis, freq_vec, mag);
             plot(obj.data2Axis, freq_vec, phs);
 

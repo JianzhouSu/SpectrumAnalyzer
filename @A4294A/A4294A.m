@@ -35,13 +35,13 @@ classdef A4294A < handle
 
         function stats = wait(obj)
             pause(0.1);
-            obj.write("*OPC?");
-
-            if isempty(obj.read())
+%             obj.write("*OPC?");
+% 
+%             if isempty(obj.read())
                 stats = 'Ready';
-            else
-                stats = 'Busy';
-            end
+%             else
+%                 stats = 'Busy';
+%             end
 
         end
 
