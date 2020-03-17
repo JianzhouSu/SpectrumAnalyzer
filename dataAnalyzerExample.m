@@ -16,7 +16,7 @@ sweepSize = size(a.data1Array);
 
 % sweepArray = sweep(zeros(sweepSize(1)),zeros(sweepSize(2)),zeros(sweepSize(2)));
 for idxSweep = (1:size(a.data1Array,1))
-sweepArray(idxSweep) = sweep(a.timeArray(idxSweep),a.freqArray(idxSweep,:),a.data1Array(idxSweep,:));
+sweepArray(idxSweep) = a.sweep(a.timeArray(idxSweep),a.freqArray(idxSweep,:),a.data1Array(idxSweep,:));
 end
 
 figure();
