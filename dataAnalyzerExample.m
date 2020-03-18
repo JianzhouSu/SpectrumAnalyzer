@@ -1,12 +1,11 @@
 %% Example Title
 function dataAnalyzerExample(pathInput)
     % Summary of example objective
-    clear;
+%     clear;
     warning('off', 'all');
     %% Section 1 Title
     % Description of first code block
     if nargin < 1
-
         a = analyzer();
     else
         a = analyzer(pathInput);

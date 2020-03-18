@@ -26,9 +26,15 @@ classdef analyzer < handle
 
             if isempty(measureName)
                 measureName = dir([obj.folder, '\*.txt']);
+                               
+                if isempty(measureName)
+                    obj.name = 'non-labeled data';
+                else
+                    obj.name = measureName.name(1:end - 4); 
+                end
             end
 
-            obj.name = measureName.name(1:end - 4);
+
             obj.timeStamp = obj.folder(end - 14:end);
             disp('Analysis case created');
             disp(obj.folder);
