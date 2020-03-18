@@ -84,6 +84,10 @@ classdef analyzer < handle
             grid on;
         end
 
+        function saveCalibratedFig(obj)
+            saveas(gcf, [obj.folder, '/', obj.name, 'Baseline Calibrated.png']);
+            saveas(gcf, [obj.folder, '/', obj.name, 'Baseline Calibrated.fig']);
+        end
         function saveResultFig(obj)
             saveas(gcf, [obj.folder, '/', obj.name, 'results.png']);
             saveas(gcf, [obj.folder, '/', obj.name, 'results.fig']);

@@ -43,6 +43,12 @@ function dataAnalyzerExample(pathInput)
     end
 
     title(a.name);
+    grid on;
+    legend;
+    xlabel('frequency(Hz)');
+    ylabel('Real part(ohms)');
+    a.saveCalibratedFig();
+    
     a.saveResult(rf, bw, qf);
     a.plotResult(rf, bw, qf);
     a.saveResultFig();
