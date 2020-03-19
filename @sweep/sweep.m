@@ -6,7 +6,7 @@ classdef sweep < handle
         vFrequency;     % frequency vector
         vValues;        % values vector
         time;           % time when sweep happen
-        resonateFreq;   % resonnate frequency of current data
+        resonateFreq;   % resonate frequency of current data
         bandwidth;      % bandwidth of spectrum
         qFactor;        % quality factor
     end
@@ -40,7 +40,7 @@ classdef sweep < handle
             %plot2d Summary of this method goes here
             %   Detailed explanation goes here
             if nargin <1
-                % if no axis inputed, create a new axes()
+                % if no axis inputted, create a new axes()
                 axisHandleOut = axes();
             else
                 % return the axis plotted on
@@ -91,7 +91,7 @@ classdef sweep < handle
             % interpolate frequency vector
             freqInterval = (obj.vFrequency(2) - obj.vFrequency(1)) / interpolateNum;
             interpFreq = obj.vFrequency(1):freqInterval:obj.vFrequency(end);
-            % interpolate valuees vector
+            % interpolate values vector
             interpValues = interp1(obj.vFrequency, obj.vValues, interpFreq);
             % find maximum point
             [maxRealPart, maxInterpIdx] = max(interpValues);
@@ -116,7 +116,7 @@ classdef sweep < handle
             % calculate bandwidth
             obj.bandwidth = rightFreq - leftFreq;
             
-            % calbulate quality factor
+            % calculate quality factor
             obj.qFactor = obj.resonateFreq/obj.bandwidth;
         end
         

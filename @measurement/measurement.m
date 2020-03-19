@@ -1,26 +1,37 @@
 classdef measurement < handle
+    %MEASUREMENT class for measurement.
+    %   Analyzer will be created by input path, load data from "*_freq.csv","*_real.csv" and "*_imag.csv".
+    %   Currently, only data1(real part) will be process, no analysis data from imagine part.
 
     properties
-        parameters;
-        device;
-        figHandle;
-        data1Axis;
-        data2Axis;
+        parameters; % parameter structure including frequencies, data format
+        device; % class of device like 4294A@A4294A
+        figHandle; % figure handle for real time plotting sweeps
+        data1Axis; % axis handle for real time plotting data1
+        data2Axis; % axis handle for real time plotting data2
     end
 
     methods
 
         function obj = measurement()
+            %measurement Constructor of measurement class.
+            %   This constructor will also include initialization and continuously query sweeps.
+
+            % parameter setup;
             obj.parameters = obj.parameterSetup();
+            % transit device class to property
             obj.device = A4294A(obj.parameters.comPort);
+            % measurement initialization
             obj.init();
+            % continuously query sweeps.
             obj.run();
 
             % END OF CODE
-            disp("END OF CODE");
+            disp("END OF MEASUREMENT.");
         end
 
         function init(obj)
+            % INIT using parameter properties to set device accordingly
 
             %Sets Measurement Parameter
             obj.device.write(['MEAS{', obj.parameters.format, '}']);
@@ -45,17 +56,27 @@ classdef measurement < handle
         end
 
         function run(obj)
+            %RUN includes loop to continuously query sweep data from device.
+            %   Besides query data, visualization is also included.
+
+            % frequencies of points of one sweep
             freqVector = linspace(obj.parameters.leftFq, obj.parameters.rightFq, obj.parameters.NOP);
 
+            % sets real time plotting figure.
             obj.figureSetup();
+            % sets STOP key handle
             keyHandle = uicontrol(...
                 'Style', 'pushbutton', ...
                 'String', 'Stop', ...
                 'Position', [80, 5, 50, 20], ...
                 'Callback', 'delete(gco)');
+
+            % time counter
             timeZero = tic;
+            % time vector records relative time when every sweep happens
             timeVector = [];
 
+            % loop for continuously query
             while ishandle(keyHandle)
                 [mag, phs] = obj.device.oneSweep();
                 obj.plotData(freqVector, mag, phs);
@@ -64,29 +85,26 @@ classdef measurement < handle
                 timeNow = toc(timeZero);
                 timeVector = [timeVector timeNow];
 
-                % save freq array
-                dlmwrite([obj.parameters.dir, obj.parameters.log, '_freq.csv'], [timeNow, freqVector], 'delimiter', ',', '-append'); % append mode
-                % save mag parts
+                % save freq array (append mode), even program crushed, data will be saved.
+                dlmwrite([obj.parameters.dir, obj.parameters.log, '_freq.csv'], [timeNow, freqVector], 'delimiter', ',', '-append');
+                % save data1(real parts)
                 dlmwrite([obj.parameters.dir, obj.parameters.log, '_real.csv'], [timeNow, transpose(mag)], 'delimiter', ',', '-append');
-                % save phs parts
+                % save data2(imagine parts)
                 dlmwrite([obj.parameters.dir, obj.parameters.log, '_imag.csv'], [timeNow, transpose(phs)], 'delimiter', ',', '-append');
-                % analyze data
-                % [resf, fwhm, Q] = obj.analyze(mag, phs, freqVector);
-                %Plot Analysis
-                % obj.plotana(timeVector, resf, fwhm, Q);
-                %Save analysis
-                % dlmwrite([obj.parameters.dir, obj.parameters.log, '_analysis.csv'], [timeNow, resf, fwhm, Q], 'delimiter', ',', '-append');
+
             end
 
+            % loop ends when stop bottom is pushed
+
+            % save original data figure.
             saveas(obj.figHandle, [obj.parameters.dir, obj.parameters.log, ' 2dFigure.png']);
             saveas(obj.figHandle, [obj.parameters.dir, obj.parameters.log, ' 2dFigure.fig']);
-            % fprintf(ia, "SING");
-
-            % disp(wait_4294a(ia, 'Sweep Finished: '));
 
         end
 
         function figureSetup(obj)
+            %figureSetup create axes and figures for real time plotting
+            %   The axes and figures handle will become the properties of class measurement.
             obj.figHandle = figure('Position', [200, 200, 500, 500]);
             obj.data1Axis = subplot(1, 2, 1);
             xlabel('Frequency (Hz)');
@@ -101,6 +119,7 @@ classdef measurement < handle
         end
 
         function plotData(obj, freq_vec, mag, phs)
+            %plotData Plot the data on axes created before.
             plot(obj.data1Axis, freq_vec, mag);
             plot(obj.data2Axis, freq_vec, phs);
 
@@ -110,45 +129,6 @@ classdef measurement < handle
 
     methods (Static)
         par = parameterSetup();
-
-        % function [resf, fwhm, Q] = analyze(real, img, freq_vec)
-
-        %     % Find RF
-        %     RFindex = find(real == max(real));
-        %     resf = freq_vec(RFindex);
-
-        %     %Find FWHM Bandwidth
-        %     halfMax = (min(real) + max(real)) / 2;
-        %     % Find where the data first drops below half the max.
-        %     index1 = find(real >= halfMax, 1, 'first');
-        %     % Find where the data last rises above half the max.
-        %     index2 = find(real >= halfMax, 1, 'last');
-        %     fwhm = freq_vec(index2) - freq_vec(index1);
-        %     % Find Q
-        %     Q = resf / fwhm;
-
-        % end
-
-        % function plotana(time_vec, resf, fwhm, Q)
-        %     figure(2);
-        %     subplot(3, 1, 1);
-        %     plot(time_vec, resf);
-        %     xlabel('Time(s)');
-        %     ylabel('Resonant Frequency(Hz)');
-        %     grid on;
-        %     subplot(3, 1, 2);
-        %     plot(time_vec, fwhm);
-        %     xlabel('Time(s)');
-        %     ylabel('Bandwidth(Hertz)');
-        %     grid on;
-        %     subplot(3, 1, 3)
-        %     plot(time_vec, Q);
-        %     xlabel('Time(s)');
-        %     ylabel('Quality Factor');
-        %     grid on
-        %     legend;
-        %     drawnow;
-        % end
 
     end
 

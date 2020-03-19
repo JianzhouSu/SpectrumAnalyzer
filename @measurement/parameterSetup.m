@@ -1,9 +1,9 @@
 function par = parameterSetup()
-    %myFun - Description
+    %parameterSetup - Set the parameter for carrying experiments.
     %
-    % Syntax: par = myFun(input)
+    % Syntax: par = parameterSetup()
     %
-    % Long description
+    % Some parameters about experiments like com port, measuring format, frequencies
 
     % device com port
     par.comPort = 'COM5';
@@ -31,6 +31,7 @@ function par = parameterSetup()
     % average on every measurement points
     par.p_aver = 8;
 
+    % if directory not exist, create one.
     if ~exist(par.dir, 'dir')
         mkdir(par.dir);
     end
