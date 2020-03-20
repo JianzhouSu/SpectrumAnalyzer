@@ -35,7 +35,7 @@ Measurement and Analysis:
 Analysis only:
 
 1. Run "@analyzer/analyzer.m"
-2. Select folder in pop-up massage box
+2. Select measurement result folder in pop-up massage box
 3. Analysis will start and results will be saved.
 
 ## Development setup
