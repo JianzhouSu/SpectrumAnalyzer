@@ -1,14 +1,18 @@
-dir
-realp = dlmread([pwd,'_real.csv'],',',0,1);
-imp = dlmread([pwd,'_imag.csv'],',',0,1);
-freq = dlmread([pwd,'_freq.csv'],',',0,1);
-time = dlmread([pwd,'_real.csv'],',');
+rfile = dir("*_real.csv").name
+ffile = dir("*_freq.csv").name
+ifile = dir("*_imag.csv").name
+
+realp = dlmread(rfile,',',0,1);
+imp = dlmread(ifile,',',0,1);
+freq = dlmread(ffile,',',0,1);
+time = dlmread(rfile,',');
 time = time(:,1)
 time_vec = [];
 sweeps = [];
 sweeps = [sweeps size(realp,1)];
 Q = []
 fr = []
+bw = []
 pshift = []
 
 %Sweep iterator parameter
@@ -24,8 +28,7 @@ pshift = []
     pshift = [pshift x(1)];
     Q = [Q x(2)];
     fr = [fr x(3)];
-    figure()
-    plot(frequency,Yr)
+    bw = [bw x(3)/x(2)];
  end
 
 
@@ -110,13 +113,13 @@ ft = fittype( 'a-2*atan(b*(x/c-c/x))', 'independent', 'x', 'dependent', 'y' );
 opts = fitoptions( 'Method', 'NonlinearLeastSquares' );
 opts.DiffMaxChange = 0.001;
 opts.Display = 'Off';
-opts.Lower = [-3.14 0 27000];
+opts.Lower = [-6.28 0 27000];
 opts.MaxFunEvals = 6000;
 opts.MaxIter = 4000;
-opts.StartPoint = [0.4218 0.9157 28000];
+opts.StartPoint = [0 100 28000];
 opts.TolFun = 1e-07;
 opts.TolX = 1e-07;
-opts.Upper = [3.14 Inf 33000];
+opts.Upper = [6.28 Inf 33000];
 
 % Fit model to data.
 [fitresult, gof] = fit( xData, yData, ft, opts );
