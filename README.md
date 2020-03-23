@@ -34,7 +34,7 @@ Measurement and Analysis:
 
 Analysis only:
 
-1. Run "@analyzer/analyzer.m"
+1. Run "dataAnalyzerExample.m"
 2. Select measurement result folder in pop-up massage box
 3. Analysis will start and results will be saved.
 
